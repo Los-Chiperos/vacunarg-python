@@ -77,9 +77,10 @@ def editar_paciente(id):
         print(f'No se pudo modificar los valores: {e}')
         return jsonify({"error": str(e)})
 
-@app.route('/buscar_paciente', methods=['GET'])
+@app.route('/buscar_paciente', methods=['POST'])
 def buscar_paciente():
-    nro_dni = request.args.get('nro_dni')
+    data = request.json
+    nro_dni = data['nro_dni']
     insertObject = []
     try:
         with db: 
@@ -96,6 +97,7 @@ def buscar_paciente():
     except Exception as e:
         print(f'Ocurrió un error: {e}')
         return jsonify({"error": str(e)})
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True, port=5000)
