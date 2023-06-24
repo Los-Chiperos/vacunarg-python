@@ -7,7 +7,6 @@ template_dir = os.path.join(template_dir, 'src', 'templates')
 
 app = Flask(__name__, template_folder=template_dir)
 
-# Código
 @app.route('/')
 def home():
     insertObject = []
@@ -21,11 +20,11 @@ def home():
                 columNames = [column[0] for column in cursor.description]
                 for record in myresult:
                     insertObject.append(dict(zip(columNames, record)))
+
+                return render_template('index.html', data = insertObject)
     except Exception as e:
         print(f'Ocurrió un error: {e}')
-    finally:
-        cursor.close()
-        return render_template('index.html', data = insertObject) 
+        return render_template('error.html', error = str(e))
 
 @app.route('/agregar_paciente', methods=['POST'])
 def agregar_paciente():
@@ -45,26 +44,25 @@ def agregar_paciente():
                 valores = (nombre,apellido,nro_dni,fecha_nacimiento,dosis,
                         fecha_aplicacion, centro_salud, nombre_vacuna, lote_vacuna)
                 cursor.execute(sentencia,valores)
+
+                return redirect(url_for('home'))
     except Exception as e:
         print(f'Ocurrió un error al cargar los datos: {e}')
-    finally:
-        cursor.close()
-        return redirect(url_for('home'))
-    
-    
+        return render_template('error.html', error = str(e))
+
 @app.route('/borrar_paciente/<int:id>')
 def borrar_paciente(id):
     try:
         with db:
             with db.cursor() as cursor:
-                sentencia = f'DELETE FROM paciente WHERE id_paciente = {id}'
-                cursor.execute(sentencia, id)
+                sentencia = 'DELETE FROM paciente WHERE id_paciente = %s'
+                cursor.execute(sentencia, (id,))
+
+                return redirect(url_for('home'))
     except Exception as e:
         print(f'No se puedo borrar el paciente: {e}')
-    finally:
-        cursor.close()
-        return redirect(url_for('home'))
-    
+        return render_template('error.html', error = str(e))
+
 @app.route('/editar_paciente/<int:id>', methods=['POST'])
 def editar_paciente(id):
     nombre = request.form['nombre']
@@ -81,11 +79,11 @@ def editar_paciente(id):
                 valores = (nombre,apellido,nro_dni,fecha_nacimiento,dosis,
                         centro_salud, id)
                 cursor.execute(sentencia, valores)
+
+                return redirect(url_for('home'))
     except Exception as e:
         print(f'No se pudo modificar los valores: {e}')
-    finally:
-        cursor.close()
-        return redirect(url_for('home'))
+        return render_template('error.html', error = str(e))
     
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
