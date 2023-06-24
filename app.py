@@ -1,19 +1,20 @@
 from flask import Flask, jsonify, request
-import os
+from flask_cors import CORS
 from database import conexion as db
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route('/')
 def home():
     insertObject = []
     try:
-        with db: 
+        with db:
             with db.cursor() as cursor:
                 sentencia = 'SELECT * FROM paciente'
                 cursor.execute(sentencia)
                 myresult = cursor.fetchall()
-                
+
                 columNames = [column[0] for column in cursor.description]
                 for record in myresult:
                     insertObject.append(dict(zip(columNames, record)))
@@ -39,9 +40,8 @@ def agregar_paciente():
         with db:
             with db.cursor() as cursor:
                 sentencia = 'INSERT INTO paciente (nombre,apellido,nro_dni,fecha_nacimiento,dosis,fecha_aplicacion, centro_salud, nombre_vacuna, lote_vacuna) values (%s,%s,%s,%s,%s,%s,%s,%s,%s)'
-                valores = (nombre,apellido,nro_dni,fecha_nacimiento,dosis,
-                        fecha_aplicacion, centro_salud, nombre_vacuna, lote_vacuna)
-                cursor.execute(sentencia,valores)
+                valores = (nombre, apellido, nro_dni, fecha_nacimiento, dosis, fecha_aplicacion, centro_salud, nombre_vacuna, lote_vacuna)
+                cursor.execute(sentencia, valores)
 
                 return jsonify({"success": "Paciente agregado correctamente."})
     except Exception as e:
@@ -58,7 +58,7 @@ def borrar_paciente(id):
 
                 return jsonify({"success": "Paciente eliminado correctamente."})
     except Exception as e:
-        print(f'No se puedo borrar el paciente: {e}')
+        print(f'No se pudo borrar el paciente: {e}')
         return jsonify({"error": str(e)})
 
 @app.route('/editar_paciente/<int:id>', methods=['PUT'])
@@ -83,12 +83,12 @@ def buscar_paciente():
     nro_dni = data['nro_dni']
     insertObject = []
     try:
-        with db: 
+        with db:
             with db.cursor() as cursor:
                 sentencia = 'SELECT * FROM paciente WHERE nro_dni = %s'
                 cursor.execute(sentencia, (nro_dni,))
                 myresult = cursor.fetchall()
-                
+
                 columNames = [column[0] for column in cursor.description]
                 for record in myresult:
                     insertObject.append(dict(zip(columNames, record)))
