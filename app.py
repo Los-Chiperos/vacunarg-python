@@ -1,11 +1,8 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, jsonify, request
 import os
 from database import conexion as db
 
-template_dir = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
-template_dir = os.path.join(template_dir, 'src', 'templates')
-
-app = Flask(__name__, template_folder=template_dir)
+app = Flask(__name__)
 
 @app.route('/')
 def home():
@@ -21,10 +18,10 @@ def home():
                 for record in myresult:
                     insertObject.append(dict(zip(columNames, record)))
 
-                return render_template('index.html', data = insertObject)
+                return jsonify(insertObject)
     except Exception as e:
         print(f'Ocurrió un error: {e}')
-        return render_template('error.html', error = str(e))
+        return jsonify({"error": str(e)})
 
 @app.route('/agregar_paciente', methods=['POST'])
 def agregar_paciente():
@@ -45,12 +42,12 @@ def agregar_paciente():
                         fecha_aplicacion, centro_salud, nombre_vacuna, lote_vacuna)
                 cursor.execute(sentencia,valores)
 
-                return redirect(url_for('home'))
+                return jsonify({"success": "Paciente agregado correctamente."})
     except Exception as e:
         print(f'Ocurrió un error al cargar los datos: {e}')
-        return render_template('error.html', error = str(e))
+        return jsonify({"error": str(e)})
 
-@app.route('/borrar_paciente/<int:id>')
+@app.route('/borrar_paciente/<int:id>', methods=['DELETE'])
 def borrar_paciente(id):
     try:
         with db:
@@ -58,12 +55,12 @@ def borrar_paciente(id):
                 sentencia = 'DELETE FROM paciente WHERE id_paciente = %s'
                 cursor.execute(sentencia, (id,))
 
-                return redirect(url_for('home'))
+                return jsonify({"success": "Paciente eliminado correctamente."})
     except Exception as e:
         print(f'No se puedo borrar el paciente: {e}')
-        return render_template('error.html', error = str(e))
+        return jsonify({"error": str(e)})
 
-@app.route('/editar_paciente/<int:id>', methods=['POST'])
+@app.route('/editar_paciente/<int:id>', methods=['PUT'])
 def editar_paciente(id):
     nombre = request.form['nombre']
     apellido = request.form['apellido']
@@ -80,10 +77,10 @@ def editar_paciente(id):
                         centro_salud, id)
                 cursor.execute(sentencia, valores)
 
-                return redirect(url_for('home'))
+                return jsonify({"success": "Paciente actualizado correctamente."})
     except Exception as e:
         print(f'No se pudo modificar los valores: {e}')
-        return render_template('error.html', error = str(e))
+        return jsonify({"error": str(e)})
     
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
