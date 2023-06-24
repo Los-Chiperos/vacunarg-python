@@ -5,7 +5,7 @@ FROM python:3.8-slim-buster
 WORKDIR /app
 
 # Copy the current directory contents into the container at /app
-ADD . /app
+COPY . /app
 
 # Install any needed packages for psycopg2 to be installed from source
 RUN apt-get update && apt-get install -y libpq-dev gcc
