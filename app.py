@@ -25,15 +25,16 @@ def home():
 
 @app.route('/agregar_paciente', methods=['POST'])
 def agregar_paciente():
-    nombre = request.form['nombre']
-    apellido = request.form['apellido']
-    nro_dni = request.form['nro_dni']
-    fecha_nacimiento = request.form['fecha_nacimiento']
-    dosis = request.form['dosis']
-    fecha_aplicacion = request.form['fecha_aplicacion']
-    centro_salud = request.form['centro_salud']
-    nombre_vacuna = request.form['nombre_vacuna']
-    lote_vacuna = request.form['lote_vacuna']
+    data = request.json
+    nombre = data['nombre']
+    apellido = data['apellido']
+    nro_dni = data['nro_dni']
+    fecha_nacimiento = data['fecha_nacimiento']
+    dosis = data['dosis']
+    fecha_aplicacion = data['fecha_aplicacion']
+    centro_salud = data['centro_salud']
+    nombre_vacuna = data['nombre_vacuna']
+    lote_vacuna = data['lote_vacuna']
     try:
         with db:
             with db.cursor() as cursor:
@@ -83,4 +84,5 @@ def editar_paciente(id):
         return jsonify({"error": str(e)})
     
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run(host='0.0.0.0', debug=True, port=5000)
+
