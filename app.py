@@ -64,26 +64,38 @@ def borrar_paciente(id):
 @app.route('/editar_paciente/<int:id>', methods=['PUT'])
 def editar_paciente(id):
     data = request.json
-    nombre = data['nombre']
-    apellido = data['apellido']
-    nro_dni = data['nro_dni']
-    fecha_nacimiento = data['fecha_nacimiento']
-    dosis = data['dosis']
-    centro_salud = data['centro_salud']
-    
+
     try:
         with db:
             with db.cursor() as cursor:
-                sentencia = 'UPDATE paciente SET nombre=%s, apellido=%s,nro_dni=%s, fecha_nacimiento=%s, dosis=%s, centro_salud=%s WHERE id_paciente=%s'
-                valores = (nombre,apellido,nro_dni,fecha_nacimiento,dosis,
-                        centro_salud, id)
-                cursor.execute(sentencia, valores)
-
+                for key in data:
+                    sentencia = f'UPDATE paciente SET {key} = %s WHERE id_paciente = %s'
+                    valores = (data[key], id)
+                    cursor.execute(sentencia, valores)
                 return jsonify({"success": "Paciente actualizado correctamente."})
     except Exception as e:
         print(f'No se pudo modificar los valores: {e}')
         return jsonify({"error": str(e)})
-    
+
+@app.route('/buscar_paciente', methods=['GET'])
+def buscar_paciente():
+    nro_dni = request.args.get('nro_dni')
+    insertObject = []
+    try:
+        with db: 
+            with db.cursor() as cursor:
+                sentencia = 'SELECT * FROM paciente WHERE nro_dni = %s'
+                cursor.execute(sentencia, (nro_dni,))
+                myresult = cursor.fetchall()
+                
+                columNames = [column[0] for column in cursor.description]
+                for record in myresult:
+                    insertObject.append(dict(zip(columNames, record)))
+
+                return jsonify(insertObject)
+    except Exception as e:
+        print(f'Ocurrió un error: {e}')
+        return jsonify({"error": str(e)})
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True, port=5000)
-
