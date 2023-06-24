@@ -63,7 +63,7 @@ def borrar_paciente(id):
 
 @app.route('/editar_paciente/<int:id>', methods=['PUT'])
 def editar_paciente(id):
-    data = jsonify
+    data = request.json
     nombre = data['nombre']
     apellido = data['apellido']
     nro_dni = data['nro_dni']
