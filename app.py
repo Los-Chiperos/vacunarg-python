@@ -63,12 +63,13 @@ def borrar_paciente(id):
 
 @app.route('/editar_paciente/<int:id>', methods=['PUT'])
 def editar_paciente(id):
-    nombre = request.form['nombre']
-    apellido = request.form['apellido']
-    nro_dni = request.form['nro_dni']
-    fecha_nacimiento = request.form['fecha_nacimiento']
-    dosis = request.form['dosis']
-    centro_salud = request.form['centro_salud']
+    data = jsonify
+    nombre = data['nombre']
+    apellido = data['apellido']
+    nro_dni = data['nro_dni']
+    fecha_nacimiento = data['fecha_nacimiento']
+    dosis = data['dosis']
+    centro_salud = data['centro_salud']
     
     try:
         with db:
