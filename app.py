@@ -3,7 +3,7 @@ from flask_cors import CORS
 from database import conexion as db
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": ["https://app.vacunarg.site"]}})
 
 @app.route('/')
 def home():
@@ -26,16 +26,16 @@ def home():
 
 @app.route('/agregar_paciente', methods=['POST'])
 def agregar_paciente():
-    data = request.json
-    nombre = data['nombre']
-    apellido = data['apellido']
-    cuil = data['cuil']
-    fecha_nacimiento = data['fecha_nacimiento']
-    dosis = data['dosis']
-    fecha_aplicacion = data['fecha_aplicacion']
-    centro_salud = data['centro_salud']
-    nombre_vacuna = data['nombre_vacuna']
-    lote_vacuna = data['lote_vacuna']
+    data = request.get_json(force=True) if request.is_json else request.form
+    nombre = data.get('nombre')
+    apellido = data.get('apellido')
+    cuil = data.get('cuil')
+    fecha_nacimiento = data.get('fecha_nacimiento')
+    dosis = data.get('dosis')
+    fecha_aplicacion = data.get('fecha_aplicacion')
+    centro_salud = data.get('centro_salud')
+    nombre_vacuna = data.get('nombre_vacuna')
+    lote_vacuna = data.get('lote_vacuna')
     try:
         with db:
             with db.cursor() as cursor:
@@ -63,7 +63,7 @@ def borrar_paciente(id):
 
 @app.route('/editar_paciente/<int:id>', methods=['PUT'])
 def editar_paciente(id):
-    data = request.json
+    data = request.get_json(force=True) if request.is_json else request.form
 
     try:
         with db:
@@ -79,8 +79,8 @@ def editar_paciente(id):
 
 @app.route('/buscar_paciente', methods=['POST'])
 def buscar_paciente():
-    data = request.json
-    cuil = data['cuil']
+    data = request.get_json(force=True) if request.is_json else request.form
+    cuil = data.get('cuil')
     insertObject = []
     try:
         with db:
