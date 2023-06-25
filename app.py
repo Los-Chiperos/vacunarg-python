@@ -29,7 +29,7 @@ def agregar_paciente():
     data = request.json
     nombre = data['nombre']
     apellido = data['apellido']
-    nro_dni = data['nro_dni']
+    cuil = data['cuil']
     fecha_nacimiento = data['fecha_nacimiento']
     dosis = data['dosis']
     fecha_aplicacion = data['fecha_aplicacion']
@@ -39,8 +39,8 @@ def agregar_paciente():
     try:
         with db:
             with db.cursor() as cursor:
-                sentencia = 'INSERT INTO paciente (nombre,apellido,nro_dni,fecha_nacimiento,dosis,fecha_aplicacion, centro_salud, nombre_vacuna, lote_vacuna) values (%s,%s,%s,%s,%s,%s,%s,%s,%s)'
-                valores = (nombre, apellido, nro_dni, fecha_nacimiento, dosis, fecha_aplicacion, centro_salud, nombre_vacuna, lote_vacuna)
+                sentencia = 'INSERT INTO paciente (nombre,apellido,cuil,fecha_nacimiento,dosis,fecha_aplicacion, centro_salud, nombre_vacuna, lote_vacuna) values (%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+                valores = (nombre, apellido, cuil, fecha_nacimiento, dosis, fecha_aplicacion, centro_salud, nombre_vacuna, lote_vacuna)
                 cursor.execute(sentencia, valores)
 
                 return jsonify({"success": "Paciente agregado correctamente."})
@@ -80,13 +80,13 @@ def editar_paciente(id):
 @app.route('/buscar_paciente', methods=['POST'])
 def buscar_paciente():
     data = request.json
-    nro_dni = data['nro_dni']
+    cuil = data['cuil']
     insertObject = []
     try:
         with db:
             with db.cursor() as cursor:
-                sentencia = 'SELECT * FROM paciente WHERE nro_dni = %s'
-                cursor.execute(sentencia, (nro_dni,))
+                sentencia = 'SELECT * FROM paciente WHERE cuil = %s'
+                cursor.execute(sentencia, (cuil,))
                 myresult = cursor.fetchall()
 
                 columNames = [column[0] for column in cursor.description]
