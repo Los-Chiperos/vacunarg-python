@@ -1,5 +1,4 @@
 from flask import Flask, jsonify, request,Blueprint
-
 from database import conexion as db
 
 team = Blueprint('team', __name__, url_prefix='/team')
