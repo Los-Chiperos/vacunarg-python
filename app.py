@@ -1,9 +1,11 @@
-from flask import Flask, jsonify, request
-from flask_cors import CORS
+from flask import Flask, jsonify, request, Blueprint
+#from flask_cors import CORS
 from database import conexion as db
+from teamController import team
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": ["https://app.vacunarg.site"]}})
+app.register_blueprint(team)
+#CORS(app, resources={r"/*": {"origins": ["https://app.vacunarg.site"]}})
 
 @app.route('/')
 def home():
@@ -27,6 +29,7 @@ def home():
 @app.route('/agregar_paciente', methods=['POST'])
 def agregar_paciente():
     data = request.get_json(force=True) if request.is_json else request.form
+
     nombre = data.get('nombre')
     apellido = data.get('apellido')
     cuil = data.get('cuil')
@@ -39,7 +42,7 @@ def agregar_paciente():
     try:
         with db:
             with db.cursor() as cursor:
-                sentencia = 'INSERT INTO paciente (nombre,apellido,cuil,fecha_nacimiento,dosis,fecha_aplicacion, centro_salud, nombre_vacuna, lote_vacuna) values (%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+                sentencia = 'INSERT INTO paciente (id,nombre,apellido,cuil,fecha_nacimiento,dosis,fecha_aplicacion, centro_salud, nombre_vacuna, lote_vacuna) values (%s,%s,%s,%s,%s,%s,%s,%s,%s)'
                 valores = (nombre, apellido, cuil, fecha_nacimiento, dosis, fecha_aplicacion, centro_salud, nombre_vacuna, lote_vacuna)
                 cursor.execute(sentencia, valores)
 
@@ -100,4 +103,5 @@ def buscar_paciente():
 
 
 if __name__ == '__main__':
+
     app.run(host='0.0.0.0', debug=True, port=5000)
