@@ -1,102 +1,41 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, session, url_for, render_template
 from flask_cors import CORS
 from database import conexion as db
+from api import home, agregar_paciente, borrar_paciente, editar_paciente, buscar_paciente
+from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
+from login import login
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": ["https://app.vacunarg.site"]}})
+app.secret_key = 'clave_secreta'  # Cambia esto por una clave secreta más segura
+app.config['JWT_SECRET_KEY'] = 'clave_secreta_jwt'  # Cambia esto por una clave secreta para JWT
+jwt = JWTManager(app)
 
-@app.route('/')
-def home():
-    insertObject = []
-    try:
-        with db:
-            with db.cursor() as cursor:
-                sentencia = 'SELECT * FROM paciente'
-                cursor.execute(sentencia)
-                myresult = cursor.fetchall()
+# Rutas
 
-                columNames = [column[0] for column in cursor.description]
-                for record in myresult:
-                    insertObject.append(dict(zip(columNames, record)))
+# Home
+app.route('/')(home)
 
-                return jsonify(insertObject)
-    except Exception as e:
-        print(f'Ocurrió un error: {e}')
-        return jsonify({"error": str(e)})
+# Agregar Paciente
+app.route('/agregar_paciente', methods=['POST'])(agregar_paciente)
 
-@app.route('/agregar_paciente', methods=['POST'])
-def agregar_paciente():
-    data = request.get_json(force=True) if request.is_json else request.form
-    nombre = data.get('nombre')
-    apellido = data.get('apellido')
-    cuil = data.get('cuil')
-    fecha_nacimiento = data.get('fecha_nacimiento')
-    dosis = data.get('dosis')
-    fecha_aplicacion = data.get('fecha_aplicacion')
-    centro_salud = data.get('centro_salud')
-    nombre_vacuna = data.get('nombre_vacuna')
-    lote_vacuna = data.get('lote_vacuna')
-    try:
-        with db:
-            with db.cursor() as cursor:
-                sentencia = 'INSERT INTO paciente (nombre,apellido,cuil,fecha_nacimiento,dosis,fecha_aplicacion, centro_salud, nombre_vacuna, lote_vacuna) values (%s,%s,%s,%s,%s,%s,%s,%s,%s)'
-                valores = (nombre, apellido, cuil, fecha_nacimiento, dosis, fecha_aplicacion, centro_salud, nombre_vacuna, lote_vacuna)
-                cursor.execute(sentencia, valores)
+#Borrar paciente
+app.route('/borrar_paciente/<int:id>', methods=['DELETE'])(borrar_paciente)
 
-                return jsonify({"success": "Paciente agregado correctamente."})
-    except Exception as e:
-        print(f'Ocurrió un error al cargar los datos: {e}')
-        return jsonify({"error": str(e)})
+#Editar paciente
+app.route('/editar_paciente/<int:id>', methods=['PUT'])(editar_paciente)
 
-@app.route('/borrar_paciente/<int:id>', methods=['DELETE'])
-def borrar_paciente(id):
-    try:
-        with db:
-            with db.cursor() as cursor:
-                sentencia = 'DELETE FROM paciente WHERE id_paciente = %s'
-                cursor.execute(sentencia, (id,))
+app.route('/buscar_paciente', methods=['POST'])(buscar_paciente)
 
-                return jsonify({"success": "Paciente eliminado correctamente."})
-    except Exception as e:
-        print(f'No se pudo borrar el paciente: {e}')
-        return jsonify({"error": str(e)})
+#Login
+app.route('/login', methods=['GET','POST'])(login)
 
-@app.route('/editar_paciente/<int:id>', methods=['PUT'])
-def editar_paciente(id):
-    data = request.get_json(force=True) if request.is_json else request.form
 
-    try:
-        with db:
-            with db.cursor() as cursor:
-                for key in data:
-                    sentencia = f'UPDATE paciente SET {key} = %s WHERE id_paciente = %s'
-                    valores = (data[key], id)
-                    cursor.execute(sentencia, valores)
-                return jsonify({"success": "Paciente actualizado correctamente."})
-    except Exception as e:
-        print(f'No se pudo modificar los valores: {e}')
-        return jsonify({"error": str(e)})
-
-@app.route('/buscar_paciente', methods=['POST'])
-def buscar_paciente():
-    data = request.get_json(force=True) if request.is_json else request.form
-    cuil = data.get('cuil')
-    insertObject = []
-    try:
-        with db:
-            with db.cursor() as cursor:
-                sentencia = 'SELECT * FROM paciente WHERE cuil = %s'
-                cursor.execute(sentencia, (cuil,))
-                myresult = cursor.fetchall()
-
-                columNames = [column[0] for column in cursor.description]
-                for record in myresult:
-                    insertObject.append(dict(zip(columNames, record)))
-
-                return jsonify(insertObject)
-    except Exception as e:
-        print(f'Ocurrió un error: {e}')
-        return jsonify({"error": str(e)})
+@app.route('/bienvenido')
+@jwt_required()
+def bienvenido():
+    username = get_jwt_identity()
+    return f'Hola, {username}! <a href="/logout">Cerrar sesión</a>'
 
 
 if __name__ == '__main__':
