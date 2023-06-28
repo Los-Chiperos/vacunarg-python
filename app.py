@@ -1,11 +1,11 @@
 from flask import Flask, jsonify, request, Blueprint
-#from flask_cors import CORS
+from flask_cors import CORS
 from database import conexion as db
 from teamController import team
 
 app = Flask(__name__)
 app.register_blueprint(team)
-#CORS(app, resources={r"/*": {"origins": ["https://app.vacunarg.site"]}})
+CORS(app, resources={r"/*": {"origins": ["https://app.vacunarg.site"]}})
 
 @app.route('/')
 def home():
