@@ -42,7 +42,7 @@ def agregar_paciente():
     try:
         with db:
             with db.cursor() as cursor:
-                sentencia = 'INSERT INTO paciente (id,nombre,apellido,cuil,fecha_nacimiento,dosis,fecha_aplicacion, centro_salud, nombre_vacuna, lote_vacuna) values (%s,%s,%s,%s,%s,%s,%s,%s,%s)'
+                sentencia = 'INSERT INTO paciente (id_paciente,nombre,apellido,cuil,fecha_nacimiento,dosis,fecha_aplicacion, centro_salud, nombre_vacuna, lote_vacuna) values (%s,%s,%s,%s,%s,%s,%s,%s,%s)'
                 valores = (nombre, apellido, cuil, fecha_nacimiento, dosis, fecha_aplicacion, centro_salud, nombre_vacuna, lote_vacuna)
                 cursor.execute(sentencia, valores)
 
