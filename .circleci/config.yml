@@ -17,7 +17,7 @@ jobs:
           command: docker push nicolaszelaran/vacunarg-python:$CIRCLE_SHA1
       - add_ssh_keys:
           fingerprints:
-            - "ab:cd:ef:gh:ij:kl:mn:op:qr:st:uv:wx:yz:12:34:56:78"
+            - "3a:81:74:61:3b:6d:2e:e2:e8:42:5a:a7:66:b9:6e:5e"
       - run:
           name: SSH and Deploy
           command: |
