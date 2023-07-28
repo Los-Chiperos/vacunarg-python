@@ -14,7 +14,7 @@ jobs:
           command: docker login -u $DOCKER_USER -p $DOCKER_PASS
       - run:
           name: Push Docker image to Docker Hub
-          command: docker push nicolaszelaran/vacunarg-python:$CIRCLE_SHA1
+          command: docker push nicolaszelarayan/vacunarg-python:$CIRCLE_SHA1
       - add_ssh_keys:
           fingerprints:
             - "3a:81:74:61:3b:6d:2e:e2:e8:42:5a:a7:66:b9:6e:5e"
