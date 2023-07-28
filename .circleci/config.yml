@@ -21,10 +21,10 @@ jobs:
       - run:
           name: SSH and Deploy
           command: |
-            - ssh -oStrictHostKeyChecking=no nicolas@$20.226.108.27 "docker pull nicolaszelaran/vacunarg-python:$CIRCLE_SHA1"
-            - ssh -oStrictHostKeyChecking=no nicolas@$20.226.108.27 "docker stop vacunarg-python || true"
-            - ssh -oStrictHostKeyChecking=no nicolas@$20.226.108.27 "docker rm vacunarg-python || true"
-            - ssh -oStrictHostKeyChecking=no nicolas@$20.226.108.27 "docker run -d -p 5000:5000 --name vacunarg-python nicolaszelaran/vacunarg-python:$CIRCLE_SHA1"
+            ssh -oStrictHostKeyChecking=no nicolas@$20.226.108.27 "docker pull nicolaszelaran/vacunarg-python:$CIRCLE_SHA1"
+            ssh -oStrictHostKeyChecking=no nicolas@$20.226.108.27 "docker stop vacunarg-python || true"
+            ssh -oStrictHostKeyChecking=no nicolas@$20.226.108.27 "docker rm vacunarg-python || true"
+            ssh -oStrictHostKeyChecking=no nicolas@$20.226.108.27 "docker run -d -p 5000:5000 --name vacunarg-python nicolaszelaran/vacunarg-python:$CIRCLE_SHA1"
             
 
 workflows:
