@@ -11,7 +11,7 @@ jobs:
           command: docker build -t nicolaszelaran/vacunarg-python:$CIRCLE_SHA1 .
       - run:
           name: Docker login
-          command: echo "$DOCKER_PASS" | docker login -u $DOCKER_USER 
+          command: echo "$DOCKER_PASS" | docker login -u $DOCKER_USER --password-stdin
       - run:
           name: Push Docker image to Docker Hub
           command: docker push nicolaszelaran/vacunarg-python:$CIRCLE_SHA1
