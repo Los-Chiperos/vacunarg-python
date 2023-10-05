@@ -2,8 +2,8 @@ import psycopg2 as bd
 
 conexion = bd.connect(
     user= 'chiperos',
-    password = 'vacunarg123.',
-    host='localhost',
+    password = 'chiperos123@',
+    host='34.95.227.165',
     port='5432',
-    database = 'vacunatorio'
+    database = 'vacunarg'
 )
