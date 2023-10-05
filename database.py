@@ -1,4 +1,4 @@
-import psycopg2 as bd
+import psycopg2
 
 conexion = bd.connect(
     user= 'chiperos',
